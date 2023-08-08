@@ -48,6 +48,14 @@ let phonenumbers = [
       res.status(404).end()
     }
   })
+
+  app.delete('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    numbers = phonenumbers.filter(number => number.id !== id)
+    phonenumbers = numbers
+  
+    res.status(204).end()
+  })
   
   const PORT = 3001
   app.listen(PORT, () => {
