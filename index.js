@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let phonenumbers = [
     {
       "name": "Arto Hellas",
@@ -21,11 +23,6 @@ let phonenumbers = [
       "name": "Mary Poppendieck",
       "number": "39-23-6423122",
       "id": 4
-    },
-    {
-      "name": "Test Name",
-      "number": "39-23-6423122",
-      "id": 5
     }
   ]
 
@@ -56,6 +53,42 @@ let phonenumbers = [
   
     res.status(204).end()
   })
+
+  app.post('/api/persons', (req, res) => {
+    const body = req.body
+    console.log('Adding to phonebook:', body)
+
+    if(!body.number){
+      return res.status(400).json({
+        error: 'number missing'
+      })
+    }
+    if(!body.name){
+      return res.status(400).json({
+        error: 'name missing'
+      })
+    }
+
+    if(phonenumbers.some(person => person.name === body.name)){
+      return res.status(400).json({
+        error: `person with name: ${body.name} is already in phonebook`
+      })
+    }
+
+    const person = {
+      name: body.name,
+      number: body.number,
+      id: generateID()
+    }
+
+    phonenumbers = phonenumbers.concat(person)
+    res.json(person)
+  })
+
+  const generateID = () => {
+    const maxID = 1000000
+    return Math.floor((Math.random() * maxID))
+  }
   
   const PORT = 3001
   app.listen(PORT, () => {
