@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const morgan = require('morgan')
 
+app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan((tokens, req, res) => {
   if(req.method === 'POST'){
