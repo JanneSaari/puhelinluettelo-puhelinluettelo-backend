@@ -51,8 +51,15 @@ let phonenumbers = [
   ]
 
   app.get('/info', (req, res) => {
-    const count = phonenumbers.length
-    res.send(`<p>Phonebook has info for ${count} people</p>`)
+    // const count = phonenumbers.length
+    // res.send(`<p>Phonebook has info for ${count} people</p>`)
+    Phonenumber.find({})
+    .then(numbers => {
+      res.send(`<p>Phonebook has info for ${numbers.length} people</p>`)
+    })
+    .catch(() => {
+      console.log('Failed to get phonenumbers')
+    })
   })
   
   app.get('/api/persons', (req, res) => {
@@ -67,13 +74,20 @@ let phonenumbers = [
 
   app.get('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
-    const number = phonenumbers.find(number => number.id === id)
-    
-    if (number) {
-      res.json(number)
-    } else {
-      res.status(404).end()
-    }
+    // const number = phonenumbers.find(number => number.id === id)
+
+    Phonenumber.find({id: id})
+    .then(number => {
+      console.log(number)
+      if (number) {
+        res.json(number)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(() => {
+      console.log('Failed to get phonenumbers')
+    })
   })
 
   app.delete('/api/persons/:id', (req, res) => {
