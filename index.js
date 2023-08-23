@@ -56,8 +56,12 @@ let phonenumbers = [
   })
   
   app.get('/api/persons', (req, res) => {
-    Phonenumber.find({}).then(numbers => {
+    Phonenumber.find({})
+    .then(numbers => {
       res.json(numbers)
+    })
+    .catch(() => {
+      console.log('Failed to get phonenumbers')
     })
     // res.json(phonenumbers)
   })
