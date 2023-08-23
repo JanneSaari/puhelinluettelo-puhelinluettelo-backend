@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const Phonenumber = require('./models/phonenumber')
 
 app.use(express.static('build'))
 app.use(express.json())
@@ -54,7 +56,10 @@ let phonenumbers = [
   })
   
   app.get('/api/persons', (req, res) => {
-    res.json(phonenumbers)
+    Phonenumber.find({}).then(numbers => {
+      res.json(numbers)
+    })
+    // res.json(phonenumbers)
   })
 
   app.get('/api/persons/:id', (req, res) => {
@@ -112,7 +117,7 @@ let phonenumbers = [
     return Math.floor((Math.random() * maxID))
   }
   
-  const PORT = 3001
+  const PORT = process.env.PORT
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
   })
