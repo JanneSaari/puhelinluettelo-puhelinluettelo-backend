@@ -63,7 +63,6 @@ let phonenumbers = [
     .catch(() => {
       console.log('Failed to get phonenumbers')
     })
-    // res.json(phonenumbers)
   })
 
   app.get('/api/persons/:id', (req, res) => {
