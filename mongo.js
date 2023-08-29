@@ -10,7 +10,7 @@ else if(process.argv.length > 5) {
   process.exit(1)
 }
 else if (process.argv.length === 4) {
-  console.log("Not enough arguments, give password, name and number, or just a password as argument")
+  console.log('Not enough arguments, give password, name and number, or just a password as argument')
   process.exit(1)
 }
 

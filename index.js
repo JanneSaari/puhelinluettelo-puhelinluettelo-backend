@@ -77,16 +77,16 @@ app.post('/api/persons', (req, res, next) => {
   const body = req.body
   console.log('Adding to phonebook:', body)
 
-  if(!body.number){
-    return res.status(400).json({
-      error: 'number missing'
-    })
-  }
-  if(!body.name){
-    return res.status(400).json({
-      error: 'name missing'
-    })
-  }
+  // if(!body.number){
+  //   return res.status(400).json({
+  //     error: 'number missing'
+  //   })
+  // }
+  // if(!body.name){
+  //   return res.status(400).json({
+  //     error: 'name missing'
+  //   })
+  // }
 
   const person = new Phonenumber({
     name: body.name,
@@ -102,13 +102,11 @@ app.post('/api/persons', (req, res, next) => {
 
 app.put('/api/persons/:id', (req, res, next) => {
   console.log('updating...')
-  const body = req.body
+  const { name, number } = req.body
 
-  const number = {
-    name: body.name,
-    number: body.number
-  }
-  Phonenumber.findByIdAndUpdate(req.params.id, number, {new: true})
+  Phonenumber.findByIdAndUpdate(req.params.id,
+    { name, number },
+    { new: true, runValidators: true, context: 'query' })
   .then(updatedNumber => {
     console.log('Updated number: ', updatedNumber)
     res.json(updatedNumber)
@@ -135,6 +133,9 @@ const errorHandler = (error, request, response, next) => {
   
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  }
+  else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
   
   next(error)
