@@ -51,8 +51,6 @@ let phonenumbers = [
   ]
 
   app.get('/info', (req, res) => {
-    // const count = phonenumbers.length
-    // res.send(`<p>Phonebook has info for ${count} people</p>`)
     Phonenumber.find({})
     .then(numbers => {
       res.send(`<p>Phonebook has info for ${numbers.length} people</p>`)
@@ -74,7 +72,6 @@ let phonenumbers = [
 
   app.get('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
-    // const number = phonenumbers.find(number => number.id === id)
 
     Phonenumber.find({id: id})
     .then(number => {
@@ -113,20 +110,22 @@ let phonenumbers = [
       })
     }
 
-    if(phonenumbers.some(person => person.name === body.name)){
-      return res.status(400).json({
-        error: `person with name: ${body.name} is already in phonebook`
-      })
-    }
+    //Not implemented yet
+    // if(phonenumbers.some(person => person.name === body.name)){
+    //   return res.status(400).json({
+    //     error: `person with name: ${body.name} is already in phonebook`
+    //   })
+    // }
 
-    const person = {
+    const person = new Phonenumber({
       name: body.name,
-      number: body.number,
-      id: generateID()
-    }
+      number: body.number
+    })
 
-    phonenumbers = phonenumbers.concat(person)
-    res.json(person)
+    person.save().then(result => {
+      console.log(result)
+      res.json(person)
+    })
   })
 
   const generateID = () => {
