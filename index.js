@@ -27,19 +27,19 @@ app.use(morgan((tokens, req, res) => {
   ].join(' ')
 }))
 
-  app.get('/info', (req, res, next) => {
-    Phonenumber.find({})
+app.get('/info', (req, res, next) => {
+  Phonenumber.find({})
     .then(numbers => {
       res.send(`<p>Phonebook has info for ${numbers.length} people</p>`)
     })
-    .catch(() => {
+    .catch(error => {
       console.log('Failed to get phonenumbers')
       next(error)
     })
-  })
+})
   
-  app.get('/api/persons', (req, res, next) => {
-    Phonenumber.find({})
+app.get('/api/persons', (req, res, next) => {
+  Phonenumber.find({})
     .then(numbers => {
       res.json(numbers)
     })
@@ -47,10 +47,10 @@ app.use(morgan((tokens, req, res) => {
       console.log('Failed to get phonenumbers')
       next(error)
     })
-  })
+})
 
-  app.get('/api/persons/:id', (req, res, next) => {
-    Phonenumber.findById(req.params.id)
+app.get('/api/persons/:id', (req, res, next) => {
+  Phonenumber.findById(req.params.id)
     .then(number => {
       console.log(number)
       // res.json(number)
@@ -63,76 +63,81 @@ app.use(morgan((tokens, req, res) => {
     .catch(error => {
       next(error)
     })
-  })
+})
 
-  app.delete('/api/persons/:id', (req, res, next) => {
-    // const id = Number(req.params.id)
-    // numbers = phonenumbers.filter(number => number.id !== id)
-    // phonenumbers = numbers
-
-    Phonenumber.findByIdAndRemove(req.params.id)
+app.delete('/api/persons/:id', (req, res, next) => {
+  Phonenumber.findByIdAndRemove(req.params.id)
     .then(result => {
       res.status(204).end()
     })
     .catch(error => next(error))
+})
+
+app.post('/api/persons', (req, res, next) => {
+  const body = req.body
+  console.log('Adding to phonebook:', body)
+
+  if(!body.number){
+    return res.status(400).json({
+      error: 'number missing'
+    })
+  }
+  if(!body.name){
+    return res.status(400).json({
+      error: 'name missing'
+    })
+  }
+
+  const person = new Phonenumber({
+    name: body.name,
+    number: body.number
   })
 
-  app.post('/api/persons', (req, res, next) => {
-    const body = req.body
-    console.log('Adding to phonebook:', body)
-
-    if(!body.number){
-      return res.status(400).json({
-        error: 'number missing'
-      })
-    }
-    if(!body.name){
-      return res.status(400).json({
-        error: 'name missing'
-      })
-    }
-
-    //Not implemented yet
-    // if(phonenumbers.some(person => person.name === body.name)){
-    //   return res.status(400).json({
-    //     error: `person with name: ${body.name} is already in phonebook`
-    //   })
-    // }
-
-    const person = new Phonenumber({
-      name: body.name,
-      number: body.number
-    })
-
-    person.save().then(result => {
-      console.log(result)
-      res.json(person)
-    })
+  person.save().then(result => {
+    console.log(result)
+    res.json(person)
+  })
     .catch(error => next(error))
-  })
-  
-  const PORT = process.env.PORT
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-  })
+})
 
+app.put('/api/persons/:id', (req, res, next) => {
+  console.log('updating...')
+  const body = req.body
 
-  //#### Error handling #####
-
-  const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' })
+  const number = {
+    name: body.name,
+    number: body.number
   }
-  // olemattomien osoitteiden käsittely
-  app.use(unknownEndpoint)
+  Phonenumber.findByIdAndUpdate(req.params.id, number, {new: true})
+  .then(updatedNumber => {
+    console.log('Updated number: ', updatedNumber)
+    res.json(updatedNumber)
+  })
+  .catch(error => next(error))
+})
+  
+const PORT = process.env.PORT
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
 
-  const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
+
+//#### Error handling #####
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+// olemattomien osoitteiden käsittely
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
   
-    if (error.name === 'CastError') {
-      return response.status(400).send({ error: 'malformatted id' })
-    }
-  
-    next(error)
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
   }
-  // virheellisten pyyntöjen käsittely
-  app.use(errorHandler)
+  
+  next(error)
+}
+// virheellisten pyyntöjen käsittely
+app.use(errorHandler)
