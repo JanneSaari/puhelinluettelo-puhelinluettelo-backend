@@ -77,17 +77,6 @@ app.post('/api/persons', (req, res, next) => {
   const body = req.body
   console.log('Adding to phonebook:', body)
 
-  // if(!body.number){
-  //   return res.status(400).json({
-  //     error: 'number missing'
-  //   })
-  // }
-  // if(!body.name){
-  //   return res.status(400).json({
-  //     error: 'name missing'
-  //   })
-  // }
-
   const person = new Phonenumber({
     name: body.name,
     number: body.number
