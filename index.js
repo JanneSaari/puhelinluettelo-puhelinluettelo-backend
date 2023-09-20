@@ -68,6 +68,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 app.delete('/api/persons/:id', (req, res, next) => {
   Phonenumber.findByIdAndRemove(req.params.id)
     .then(result => {
+      console.log(result)
       res.status(204).end()
     })
     .catch(error => next(error))
@@ -93,14 +94,15 @@ app.put('/api/persons/:id', (req, res, next) => {
   console.log('updating...')
   const { name, number } = req.body
 
-  Phonenumber.findByIdAndUpdate(req.params.id,
-    { name, number },
-    { new: true, runValidators: true, context: 'query' })
-  .then(updatedNumber => {
-    console.log('Updated number: ', updatedNumber)
-    res.json(updatedNumber)
-  })
-  .catch(error => next(error))
+  Phonenumber
+    .findByIdAndUpdate(req.params.id,
+      { name, number },
+      { new: true, runValidators: true, context: 'query' })
+    .then(updatedNumber => {
+      console.log('Updated number: ', updatedNumber)
+      res.json(updatedNumber)
+    })
+    .catch(error => next(error))
 })
   
 const PORT = process.env.PORT

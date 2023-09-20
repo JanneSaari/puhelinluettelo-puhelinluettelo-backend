@@ -1,3 +1,4 @@
+// const res = require('express/lib/response')
 const mongoose = require('mongoose')
 
 // Too few arguments
@@ -50,6 +51,7 @@ else if (process.argv.length === 5){
     number: number,
   })
   newNumber.save().then(result => {
+    console.log(result)
     console.log(`added ${name} to the phonebook!`)
     mongoose.connection.close()
   })
